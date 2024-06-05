@@ -1,26 +1,19 @@
 import sys
 
 from PyQt6.QtCore import Qt
-from PyQt6.QtGui import QPalette, QColor
 from PyQt6.QtWidgets import (
     QApplication,
+    QHBoxLayout,
     QLabel,
     QMainWindow,
     QPushButton,
-    QTabWidget,
+    QStackedLayout,
+    QVBoxLayout,
     QWidget,
-    QStatusBar,
 )
 
-class Color(QWidget):
+from layout_colorwidget import Color
 
-    def __init__(self, color):
-        super(Color, self).__init__()
-        self.setAutoFillBackground(True)
-
-        palette = self.palette()
-        palette.setColor(QPalette.ColorRole.Window, QColor(color))
-        self.setPalette(palette)
 
 class MainWindow(QMainWindow):
     def __init__(self):
@@ -28,14 +21,40 @@ class MainWindow(QMainWindow):
 
         self.setWindowTitle("My App")
 
-        tabs = QTabWidget()
-        tabs.setTabPosition(QTabWidget.TabPosition.West)
-        tabs.setMovable(True)
+        pagelayout = QVBoxLayout()
+        button_layout = QHBoxLayout()
+        self.stacklayout = QStackedLayout()
 
-        for n, color in enumerate(["red", "green", "blue", "yellow", "black", "white"]):
-            tabs.addTab(Color(color), color)
+        pagelayout.addLayout(button_layout)
+        pagelayout.addLayout(self.stacklayout)
 
-        self.setCentralWidget(tabs)
+        btn = QPushButton("red")
+        btn.pressed.connect(self.activate_tab_1)
+        button_layout.addWidget(btn)
+        self.stacklayout.addWidget(Color("red"))
+
+        btn = QPushButton("green")
+        btn.pressed.connect(self.activate_tab_2)
+        button_layout.addWidget(btn)
+        self.stacklayout.addWidget(Color("green"))
+
+        btn = QPushButton("yellow")
+        btn.pressed.connect(self.activate_tab_3)
+        button_layout.addWidget(btn)
+        self.stacklayout.addWidget(Color("yellow"))
+
+        widget = QWidget()
+        widget.setLayout(pagelayout)
+        self.setCentralWidget(widget)
+
+    def activate_tab_1(self):
+        self.stacklayout.setCurrentIndex(0)
+
+    def activate_tab_2(self):
+        self.stacklayout.setCurrentIndex(1)
+
+    def activate_tab_3(self):
+        self.stacklayout.setCurrentIndex(2)
 
 
 app = QApplication(sys.argv)
